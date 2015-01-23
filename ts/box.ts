@@ -2,7 +2,7 @@ class Box extends Body
 {
     private bitmap:createjs.Bitmap;
 
-    constructor(private world:b2World, name:string, private position:b2Vec2)
+    constructor(private world:b2World, name:string, private position:b2Vec2, private kill_orho:boolean = false)
     {
         super();
 
@@ -31,6 +31,18 @@ class Box extends Body
 
     public on_tick():void
     {
+        if (this.kill_orho)
+        {
+            var localPoint = new b2Vec2(0,0);
+            var velocity:b2Vec2 = this.body.GetLinearVelocityFromLocalPoint(localPoint);
+
+            var sidewaysAxis = this.body.GetTransform().R.col2.Copy();
+            sidewaysAxis.Multiply(b2Math.Dot(velocity,sidewaysAxis))
+
+            this.body.SetLinearVelocity(sidewaysAxis);
+            this.body.SetAngularVelocity(0);
+        }
+
         g_common.align_sprite_to_phys(this.bitmap, this.body);
     }
 }
