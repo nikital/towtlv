@@ -15,14 +15,18 @@ class Level
         var gravity = new b2Vec2(0, 0);
         this.world = new b2World(gravity, true);
 
-        this.tow_truck = new Tow_truck(this.world, new b2Vec2(4, 4));
+        this.tow_truck = new Tow_truck(this.world, new b2Vec2(4, 10));
 
         this.world.SetDebugDraw(this.debug_draw);
     }
 
     public on_tick():void
     {
+        this.tow_truck.on_tick();
+
         this.world.Step(1/60, 6, 3);
+        this.world.ClearForces();
+
         this.world.DrawDebugData();
     }
 }

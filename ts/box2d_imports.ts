@@ -1,5 +1,6 @@
 /// <reference path="defs/box2d.d.ts" />
 
+import b2Math = Box2D.Common.Math.b2Math;
 import b2Vec2 = Box2D.Common.Math.b2Vec2;
 
 import b2DebugDraw = Box2D.Dynamics.b2DebugDraw;

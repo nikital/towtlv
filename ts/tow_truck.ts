@@ -1,9 +1,14 @@
 class Tow_truck
 {
     private body:b2Body;
+    private right:b2Body;
+    private left:b2Body;
     private right_joint:b2RevoluteJoint;
     private left_joint:b2RevoluteJoint;
+    private all_wheels:b2Body[] = [];
+
     private turning_speed = 10;
+    private motor_force = 100;
 
     constructor(private world:b2World, position:b2Vec2)
     {
@@ -16,7 +21,8 @@ class Tow_truck
         var body_def = new b2BodyDef();
         body_def.type = b2Body.b2_dynamicBody;
         body_def.position = position;
-        // add linear and angular damping
+        body_def.linearDamping = 1;
+        body_def.angularDamping = 1;
 
         var fix_def = new b2FixtureDef();
         var poly = new b2PolygonShape();
@@ -34,12 +40,14 @@ class Tow_truck
 
         var body_def = new b2BodyDef();
         body_def.type = b2Body.b2_dynamicBody;
+        body_def.linearDamping = 1;
+        body_def.angularDamping = 1;
 
         var fix_def = new b2FixtureDef();
         var poly = new b2PolygonShape();
         poly.SetAsBox(0.15, 0.4);
         fix_def.shape = poly;
-        fix_def.density = 1;
+        fix_def.density = 10;
 
         body_def.position = position.Copy();
         body_def.position.Add(new b2Vec2(wheel_offset.x, -wheel_offset.y));
@@ -85,5 +93,57 @@ class Tow_truck
         prismatic_def.Initialize(this.body, left_rear, left_rear.GetWorldCenter(), new b2Vec2(0, 1));
         this.world.CreateJoint(prismatic_def);
 
+        this.right = right_front;
+        this.left = left_front;
+        this.all_wheels.push(right_front);
+        this.all_wheels.push(left_front);
+        this.all_wheels.push(right_rear);
+        this.all_wheels.push(left_rear);
+    }
+
+    public on_tick():void
+    {
+        if (g_input.forward || g_input.backwards)
+        {
+            var multiplier = this.motor_force * (g_input.forward ? -1 : 1);
+            var vec = this.right.GetTransform().R.col2.Copy();
+            vec.Multiply(multiplier);
+            this.right.ApplyForce(vec, this.right.GetPosition());
+
+            vec = this.left.GetTransform().R.col2.Copy();
+            vec.Multiply(multiplier);
+            this.left.ApplyForce(vec, this.left.GetPosition());
+        }
+
+        if (g_input.right)
+        {
+            this.right_joint.SetMotorSpeed(this.turning_speed);
+            this.left_joint.SetMotorSpeed(this.turning_speed);
+        }
+        else if (g_input.left)
+        {
+            this.right_joint.SetMotorSpeed(-this.turning_speed);
+            this.left_joint.SetMotorSpeed(-this.turning_speed);
+        }
+        if (!g_input.right && !g_input.left)
+        {
+            var to_center = -this.right_joint.GetJointAngle();
+            this.right_joint.SetMotorSpeed(to_center * this.turning_speed);
+            to_center = -this.left_joint.GetJointAngle();
+            this.left_joint.SetMotorSpeed(to_center * this.turning_speed);
+        }
+
+        for (var i = 0; i < this.all_wheels.length; ++i)
+        {
+            var wheel = this.all_wheels[i];
+
+            var localPoint = new b2Vec2(0,0);
+            var velocity:b2Vec2 = wheel.GetLinearVelocityFromLocalPoint(localPoint);
+
+            var sidewaysAxis = wheel.GetTransform().R.col2.Copy();
+            sidewaysAxis.Multiply(b2Math.Dot(velocity,sidewaysAxis))
+
+            wheel.SetLinearVelocity(sidewaysAxis);
+        }
     }
 }

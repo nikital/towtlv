@@ -1,4 +1,5 @@
 /// <reference path="box2d_imports.ts" />
+/// <reference path="input.ts" />
 /// <reference path="level.ts" />
 
 class Main
@@ -8,6 +9,8 @@ class Main
 
     constructor(private canvas:HTMLCanvasElement)
     {
+        g_input = new Input();
+
         this.debug_draw.SetSprite(canvas.getContext("2d"));
         this.debug_draw.SetDrawScale(30.0);
         this.debug_draw.SetFillAlpha(0.5);
