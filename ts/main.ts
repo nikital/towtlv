@@ -1,4 +1,5 @@
 /// <reference path="box2d_imports.ts" />
+/// <reference path="defs/easeljs/easeljs.d.ts" />
 /// <reference path="input.ts" />
 /// <reference path="level.ts" />
 
