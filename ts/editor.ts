@@ -10,6 +10,7 @@ interface LevelProp
 {
     bitmap:createjs.Bitmap;
     prop:Prop;
+    name:string;
 }
 
 enum Modal
@@ -68,7 +69,8 @@ class Editor
 
     private add_prop(e:MouseEvent):void
     {
-        var prop = Props[(<HTMLButtonElement>e.target).innerText];
+        var name = (<HTMLButtonElement>e.target).innerText;
+        var prop = Props[name];
         console.log((<HTMLButtonElement>e.target).innerText);
 
         var bitmap = new createjs.Bitmap(Preload.get_bitmap(prop.bitmap_path));
@@ -80,7 +82,7 @@ class Editor
 
         bitmap.on('click', this.on_click, this);
 
-        this.props.push({bitmap:bitmap, prop:prop});
+        this.props.push({bitmap:bitmap, prop:prop, name: name});
 
         var simulated = new createjs.MouseEvent('click', false, true, 0, 0, null, 0, true, 0, 0);
         bitmap.dispatchEvent(simulated);
@@ -164,11 +166,60 @@ class Editor
                     this.modal = Modal.None;
                 }
                 break;
+            case 'E'.charCodeAt(0):
+                this.export_level();
+                break;
+            case 'I'.charCodeAt(0):
+                this.import_level();
+                break;
             default:
                 return;
         }
 
         e.preventDefault();
+    }
+
+    private export_level():void
+    {
+        var data = {
+            background: '',
+            props: [
+            ],
+        }
+
+        for (var i = 0; i < this.props.length; ++i)
+        {
+            var prop = this.props[i];
+            data.props.push({prop:prop.name, x:prop.bitmap.x, y:prop.bitmap.y});
+        }
+
+        document.getElementById("level").value = JSON.stringify(data);
+    }
+
+    private import_level():void
+    {
+        this.stage.removeAllChildren();
+        this.props = [];
+        this.active_prop = null;
+        this.modal = Modal.None;
+
+        var data = JSON.parse(document.getElementById("level").value);
+        for (var i = 0; i < data.props.length; ++i)
+        {
+            var name = data.props[i].prop;
+            var prop = Props[name];
+
+            var bitmap = new createjs.Bitmap(Preload.get_bitmap(prop.bitmap_path));
+            bitmap.regX = bitmap.getBounds().width / 2;
+            bitmap.regY = bitmap.getBounds().height / 2;
+            bitmap.x = data.props[i].x;
+            bitmap.y = data.props[i].y;
+            this.stage.addChild(bitmap);
+
+            bitmap.on('click', this.on_click, this);
+
+            this.props.push({bitmap:bitmap, prop:prop, name: name});
+        }
     }
 }
 
