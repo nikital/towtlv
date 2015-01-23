@@ -3,6 +3,7 @@ class Tow_truck
     private body:b2Body;
     private right_joint:b2RevoluteJoint;
     private left_joint:b2RevoluteJoint;
+    private turning_speed = 10;
 
     constructor(private world:b2World, position:b2Vec2)
     {
@@ -62,7 +63,7 @@ class Tow_truck
 
         var revolute_def = new b2RevoluteJointDef();
         revolute_def.enableMotor = true;
-        revolute_def.motorSpeed = 10;
+        revolute_def.motorSpeed = this.turning_speed;
         revolute_def.maxMotorTorque = 1000;
         revolute_def.enableLimit = true;
         revolute_def.upperAngle = 0.8;
@@ -73,6 +74,16 @@ class Tow_truck
 
         revolute_def.Initialize(this.body, left_front, left_front.GetWorldCenter());
         this.left_joint = <b2RevoluteJoint>this.world.CreateJoint(revolute_def);
+
+        var prismatic_def = new b2PrismaticJointDef();
+        prismatic_def.enableLimit = true;
+        prismatic_def.lowerTranslation = prismatic_def.upperTranslation = 0;
+
+        prismatic_def.Initialize(this.body, right_rear, right_rear.GetWorldCenter(), new b2Vec2(0, 1));
+        this.world.CreateJoint(prismatic_def);
+
+        prismatic_def.Initialize(this.body, left_rear, left_rear.GetWorldCenter(), new b2Vec2(0, 1));
+        this.world.CreateJoint(prismatic_def);
 
     }
 }
