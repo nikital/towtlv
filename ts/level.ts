@@ -2,7 +2,7 @@
 /// <reference path="box.ts" />
 /// <reference path="tow_truck.ts" />
 
-class Level
+class Level extends createjs.Container
 {
     private world:b2World;
     private tow_truck:Tow_truck;
@@ -10,9 +10,12 @@ class Level
 
     constructor(private debug_draw:b2DebugDraw)
     {
+        super();
+
         this.init_phys();
 
         this.tow_truck = new Tow_truck(this.world, new b2Vec2(4, 20));
+        this.addChild(this.tow_truck.container);
 
         for (var i = 0; i < 10; ++i)
         {
@@ -52,7 +55,10 @@ class Level
 
         this.world.Step(1/60, 6, 3);
         this.world.ClearForces();
+    }
 
+    public draw_debug():void
+    {
         this.world.DrawDebugData();
     }
 }

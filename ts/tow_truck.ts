@@ -10,7 +10,10 @@ class Tow_truck extends Body
 
     private all_wheels:b2Body[] = [];
 
-    private arm_speed = 2;
+    private bitmap_body:createjs.Bitmap;
+    private bitmap_arm:createjs.Bitmap;
+
+    private arm_speed = 3;
     private turning_speed = 10;
     private motor_force = 300;
     private arm_half_len = 2.2;
@@ -22,6 +25,8 @@ class Tow_truck extends Body
         this.create_body(position);
         this.create_wheels();
         this.create_arm();
+
+        this.create_graphics();
     }
 
     private create_body(position:b2Vec2):void
@@ -131,13 +136,26 @@ class Tow_truck extends Body
 
         var revolute_def = new b2RevoluteJointDef();
         revolute_def.enableMotor = true;
-        revolute_def.maxMotorTorque = 20;
+        revolute_def.maxMotorTorque = 100;
         revolute_def.enableLimit = true;
         revolute_def.upperAngle = 0.3;
         revolute_def.lowerAngle = -revolute_def.upperAngle;
 
         revolute_def.Initialize(this.body, this.arm, this.arm.GetWorldPoint(new b2Vec2(0, -this.arm_half_len)));
         this.arm_joint = <b2RevoluteJoint>this.world.CreateJoint(revolute_def);
+    }
+
+    private create_graphics():void
+    {
+        this.bitmap_body = new createjs.Bitmap(Preload.get_bitmap('tow_body'));
+        this.bitmap_body.regX = this.bitmap_body.getBounds().width/2;
+        this.bitmap_body.regY = this.bitmap_body.getBounds().height/2;
+        this.container.addChild(this.bitmap_body);
+
+        this.bitmap_arm = new createjs.Bitmap(Preload.get_bitmap('tow_arm'));
+        this.bitmap_arm.regX = this.bitmap_arm.getBounds().width/2;
+        this.bitmap_arm.regY = this.bitmap_arm.getBounds().height/2;
+        this.container.addChild(this.bitmap_arm);
     }
 
     public on_tick():void
@@ -189,6 +207,9 @@ class Tow_truck extends Body
 
             wheel.SetLinearVelocity(sidewaysAxis);
         }
+
+        g_common.align_sprite_to_phys(this.bitmap_body, this.body);
+        g_common.align_sprite_to_phys(this.bitmap_arm, this.arm);
     }
 
     public tow(towed:Body):void
