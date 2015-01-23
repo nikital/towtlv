@@ -81,6 +81,10 @@ class Editor
         bitmap.on('click', this.on_click, this);
 
         this.props.push({bitmap:bitmap, prop:prop});
+
+        var simulated = new createjs.MouseEvent('click', false, true, 0, 0, null, 0, true, 0, 0);
+        bitmap.dispatchEvent(simulated);
+        this.modal = Modal.Grab;
     }
 
     private on_click(e:createjs.MouseEvent):void
@@ -148,6 +152,16 @@ class Editor
                 if (this.active_prop)
                 {
                     this.modal = Modal.Rotate;
+                }
+                break;
+            case 'X'.charCodeAt(0):
+                if (this.active_prop)
+                {
+                    this.stage.removeChild(this.active_prop.bitmap);
+                    var i = this.props.indexOf(this.active_prop);
+                    this.props.splice(i, 1);
+                    this.active_prop = null;
+                    this.modal = Modal.None;
                 }
                 break;
             default:
