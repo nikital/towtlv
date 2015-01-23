@@ -3,6 +3,7 @@ class Tow_truck extends Body
     private body:b2Body;
     private right:b2Body;
     private left:b2Body;
+    private arm:b2Body;
     private right_joint:b2RevoluteJoint;
     private left_joint:b2RevoluteJoint;
     private all_wheels:b2Body[] = [];
@@ -16,6 +17,7 @@ class Tow_truck extends Body
 
         this.create_body(position);
         this.create_wheels();
+        this.create_arm();
     }
 
     private create_body(position:b2Vec2):void
@@ -106,7 +108,6 @@ class Tow_truck extends Body
     private create_arm():void
     {
         var offset = new b2Vec2(0, 1+2);
-        offset = b2Math.MulMV(this.body.GetTransform().R, offset);
 
         var body_def = new b2BodyDef();
         body_def.type = b2Body.b2_dynamicBody;
@@ -119,16 +120,18 @@ class Tow_truck extends Body
         poly.SetAsBox(0.2, 2);
         fix_def.shape = poly;
         fix_def.density = 20;
+        fix_def.isSensor = true;
+
+        this.arm = this.world.CreateBody(body_def);
+        this.arm.CreateFixture(fix_def);
 
         var revolute_def = new b2RevoluteJointDef();
         revolute_def.enableLimit = true;
         revolute_def.upperAngle = 0.3;
         revolute_def.lowerAngle = -revolute_def.upperAngle;
 
-        var arm = this.world.CreateBody(body_def);
-        arm.CreateFixture(fix_def);
-        revolute_def.Initialize(this.body, arm, arm.GetWorldPoint(new b2Vec2(0, -2)));
-        <b2RevoluteJoint>this.world.CreateJoint(revolute_def);
+        revolute_def.Initialize(this.body, this.arm, this.arm.GetWorldPoint(new b2Vec2(0, -2)));
+        this.world.CreateJoint(revolute_def);
     }
 
     public on_tick():void
@@ -161,13 +164,6 @@ class Tow_truck extends Body
         {
             this.right_joint.SetMotorSpeed(-this.turning_speed);
             this.left_joint.SetMotorSpeed(-this.turning_speed);
-        }
-
-        if (g_input.tow)
-        {
-            g_input.tow = false;
-
-            this.create_arm();
         }
 
         for (var i = 0; i < this.all_wheels.length; ++i)
