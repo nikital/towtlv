@@ -30,7 +30,7 @@ class Level extends createjs.Container
         }
 
         // this.towed = new Box(this.world, 0.85, 2.25, new b2Vec2(j*0.5+i*1.5, j*1.5), 0.3);
-        this.towed = new Box(this.world, 'car', new b2Vec2(20, 10), 0.3, true);
+        this.towed = new Box(this.world, 'car', new b2Vec2(20, 10), 0.3);
         this.addChild(this.towed.container);
         this.ticked.push(this.towed);
 

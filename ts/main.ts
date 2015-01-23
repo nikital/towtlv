@@ -4,6 +4,7 @@
 /// <reference path="common.ts" />
 /// <reference path="input.ts" />
 /// <reference path="preload.ts" />
+/// <reference path="props.ts" />
 /// <reference path="level.ts" />
 
 class Main
