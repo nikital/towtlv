@@ -15,7 +15,7 @@ class Tow_truck extends Body
         super();
 
         this.create_body(position);
-        this.create_wheels(position);
+        this.create_wheels();
     }
 
     private create_body(position:b2Vec2):void
@@ -36,7 +36,7 @@ class Tow_truck extends Body
         this.body.CreateFixture(fix_def);
     }
 
-    private create_wheels(position:b2Vec2):void
+    private create_wheels():void
     {
         var wheel_offset = new b2Vec2(1.2, 2.3);
 
@@ -51,22 +51,22 @@ class Tow_truck extends Body
         fix_def.shape = poly;
         fix_def.density = 20;
 
-        body_def.position = position.Copy();
+        body_def.position = this.body.GetPosition().Copy();
         body_def.position.Add(new b2Vec2(wheel_offset.x, -wheel_offset.y));
         var right_front = this.world.CreateBody(body_def);
         right_front.CreateFixture(fix_def);
 
-        body_def.position = position.Copy();
+        body_def.position = this.body.GetPosition().Copy();
         body_def.position.Add(new b2Vec2(-wheel_offset.x, -wheel_offset.y));
         var left_front = this.world.CreateBody(body_def);
         left_front.CreateFixture(fix_def);
 
-        body_def.position = position.Copy();
+        body_def.position = this.body.GetPosition().Copy();
         body_def.position.Add(new b2Vec2(wheel_offset.x, wheel_offset.y));
         var right_rear = this.world.CreateBody(body_def);
         right_rear.CreateFixture(fix_def);
 
-        body_def.position = position.Copy();
+        body_def.position = this.body.GetPosition().Copy();
         body_def.position.Add(new b2Vec2(-wheel_offset.x, wheel_offset.y));
         var left_rear = this.world.CreateBody(body_def);
         left_rear.CreateFixture(fix_def);
@@ -103,6 +103,34 @@ class Tow_truck extends Body
         this.all_wheels.push(left_rear);
     }
 
+    private create_arm():void
+    {
+        var offset = new b2Vec2(0, 1+2);
+        offset = b2Math.MulMV(this.body.GetTransform().R, offset);
+
+        var body_def = new b2BodyDef();
+        body_def.type = b2Body.b2_dynamicBody;
+        body_def.position = this.body.GetPosition().Copy();
+        body_def.position.Add(offset);
+        body_def.angle = this.body.GetTransform().GetAngle();
+
+        var fix_def = new b2FixtureDef();
+        var poly = new b2PolygonShape();
+        poly.SetAsBox(0.2, 2);
+        fix_def.shape = poly;
+        fix_def.density = 20;
+
+        var revolute_def = new b2RevoluteJointDef();
+        revolute_def.enableLimit = true;
+        revolute_def.upperAngle = 0.3;
+        revolute_def.lowerAngle = -revolute_def.upperAngle;
+
+        var arm = this.world.CreateBody(body_def);
+        arm.CreateFixture(fix_def);
+        revolute_def.Initialize(this.body, arm, arm.GetWorldPoint(new b2Vec2(0, -2)));
+        <b2RevoluteJoint>this.world.CreateJoint(revolute_def);
+    }
+
     public on_tick():void
     {
         if (g_input.forward || g_input.backwards)
@@ -133,6 +161,13 @@ class Tow_truck extends Body
         {
             this.right_joint.SetMotorSpeed(-this.turning_speed);
             this.left_joint.SetMotorSpeed(-this.turning_speed);
+        }
+
+        if (g_input.tow)
+        {
+            g_input.tow = false;
+
+            this.create_arm();
         }
 
         for (var i = 0; i < this.all_wheels.length; ++i)
