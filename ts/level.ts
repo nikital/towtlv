@@ -8,6 +8,8 @@ class Level extends createjs.Container
     private tow_truck:Tow_truck;
     private towed:Box;
 
+    private ticked:Body[] = [];
+
     constructor(private debug_draw:b2DebugDraw)
     {
         super();
@@ -15,17 +17,24 @@ class Level extends createjs.Container
         this.init_phys();
 
         this.tow_truck = new Tow_truck(this.world, new b2Vec2(4, 20));
-        this.addChild(this.tow_truck.container);
+        this.ticked.push(this.tow_truck);
 
         for (var i = 0; i < 10; ++i)
         {
             for (var j = 0; j < 10; ++j)
             {
-                new Box(this.world, 0.5, 0.5, new b2Vec2(j*0.5+i*1.5, j*1.5), 0.3);
+                var b = new Box(this.world, 'box', new b2Vec2(j*0.5+i*1.5, j*1.5));
+                this.addChild(b.container);
+                this.ticked.push(b);
             }
         }
 
-        this.towed = new Box(this.world, 0.85, 2.25, new b2Vec2(j*0.5+i*1.5, j*1.5), 0.3);
+        // this.towed = new Box(this.world, 0.85, 2.25, new b2Vec2(j*0.5+i*1.5, j*1.5), 0.3);
+        this.towed = new Box(this.world, 'car', new b2Vec2(20, 10));
+        this.addChild(this.towed.container);
+        this.ticked.push(this.towed);
+
+        this.addChild(this.tow_truck.container);
     }
 
     private init_phys():void
@@ -51,7 +60,10 @@ class Level extends createjs.Container
             }
         }
 
-        this.tow_truck.on_tick();
+        for (var i = 0; i < this.ticked.length; ++i)
+        {
+            this.ticked[i].on_tick();
+        }
 
         this.world.Step(1/60, 6, 3);
         this.world.ClearForces();

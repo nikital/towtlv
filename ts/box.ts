@@ -1,8 +1,17 @@
 class Box extends Body
 {
-    constructor(private world:b2World, width:number, height:number, private position:b2Vec2, private angle = 0)
+    private bitmap:createjs.Bitmap;
+
+    constructor(private world:b2World, name:string, private position:b2Vec2)
     {
         super();
+
+        this.bitmap = new createjs.Bitmap(Preload.get_bitmap(name));
+        var half_width = this.bitmap.getBounds().width/2
+        var half_height = this.bitmap.getBounds().height/2;
+        this.bitmap.regX = half_width;
+        this.bitmap.regY = half_height;
+        this.container.addChild(this.bitmap);
 
         var body_def = new b2BodyDef();
         body_def.type = b2Body.b2_dynamicBody;
@@ -12,11 +21,16 @@ class Box extends Body
 
         var fix_def = new b2FixtureDef();
         var poly = new b2PolygonShape();
-        poly.SetAsBox(width, height);
+        poly.SetAsBox((half_width-4) / g_common.pixel_scale, (half_height-4) / g_common.pixel_scale);
         fix_def.shape = poly;
         fix_def.density = 1;
 
         this.body = this.world.CreateBody(body_def);
         this.body.CreateFixture(fix_def);
+    }
+
+    public on_tick():void
+    {
+        g_common.align_sprite_to_phys(this.bitmap, this.body);
     }
 }
