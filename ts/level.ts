@@ -38,7 +38,10 @@ class Level
         if (g_input.tow)
         {
             g_input.tow = false;
-            this.tow_truck.tow(this.towed);
+            if (this.tow_truck.can_tow(this.towed))
+            {
+                this.tow_truck.tow(this.towed);
+            }
         }
 
         this.tow_truck.on_tick();

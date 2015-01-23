@@ -12,6 +12,7 @@ class Tow_truck extends Body
     private arm_speed = 2;
     private turning_speed = 10;
     private motor_force = 300;
+    private arm_half_len = 2;
 
     constructor(private world:b2World, position:b2Vec2)
     {
@@ -109,7 +110,7 @@ class Tow_truck extends Body
 
     private create_arm():void
     {
-        var offset = new b2Vec2(0, 1+2);
+        var offset = new b2Vec2(0, 1+this.arm_half_len);
 
         var body_def = new b2BodyDef();
         body_def.type = b2Body.b2_dynamicBody;
@@ -119,7 +120,7 @@ class Tow_truck extends Body
 
         var fix_def = new b2FixtureDef();
         var poly = new b2PolygonShape();
-        poly.SetAsBox(0.2, 2);
+        poly.SetAsBox(0.2, this.arm_half_len);
         fix_def.shape = poly;
         fix_def.density = 20;
         fix_def.isSensor = true;
@@ -134,7 +135,7 @@ class Tow_truck extends Body
         revolute_def.upperAngle = 0.3;
         revolute_def.lowerAngle = -revolute_def.upperAngle;
 
-        revolute_def.Initialize(this.body, this.arm, this.arm.GetWorldPoint(new b2Vec2(0, -2)));
+        revolute_def.Initialize(this.body, this.arm, this.arm.GetWorldPoint(new b2Vec2(0, -this.arm_half_len)));
         this.arm_joint = <b2RevoluteJoint>this.world.CreateJoint(revolute_def);
     }
 
@@ -191,8 +192,27 @@ class Tow_truck extends Body
 
     public tow(towed:Body):void
     {
+        var contact_point = this.arm.GetWorldPoint(new b2Vec2(0, this.arm_half_len));
+
         var revolute_def = new b2RevoluteJointDef();
-        revolute_def.Initialize(this.arm, towed.body, this.arm.GetWorldPoint(new b2Vec2(0, 2)));
+        revolute_def.Initialize(this.arm, towed.body, contact_point);
         this.world.CreateJoint(revolute_def);
+    }
+
+    public can_tow(towed:Body):boolean
+    {
+        var contact_point = this.arm.GetWorldPoint(new b2Vec2(0, this.arm_half_len));
+        var colliding = false
+        var fixture = towed.body.GetFixtureList();
+        for (var fixture = towed.body.GetFixtureList(); fixture; fixture = fixture.GetNext())
+        {
+            if (fixture.TestPoint(contact_point))
+            {
+                colliding = true;
+                break;
+            }
+        }
+
+        return colliding;
     }
 }
