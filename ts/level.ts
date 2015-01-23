@@ -6,6 +6,7 @@ class Level
 {
     private world:b2World;
     private tow_truck:Tow_truck;
+    private towed:Box;
 
     constructor(private debug_draw:b2DebugDraw)
     {
@@ -20,6 +21,8 @@ class Level
                 new Box(this.world, 0.5, 0.5, new b2Vec2(j*0.5+i*1.5, j*1.5), 0.3);
             }
         }
+
+        this.towed = new Box(this.world, 2, 2, new b2Vec2(j*0.5+i*1.5, j*1.5), 0.3);
     }
 
     private init_phys():void
@@ -32,6 +35,12 @@ class Level
 
     public on_tick():void
     {
+        if (g_input.tow)
+        {
+            g_input.tow = false;
+            this.tow_truck.tow(this.towed);
+        }
+
         this.tow_truck.on_tick();
 
         this.world.Step(1/60, 6, 3);

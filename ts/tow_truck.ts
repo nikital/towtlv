@@ -1,13 +1,15 @@
 class Tow_truck extends Body
 {
-    private body:b2Body;
     private right:b2Body;
     private left:b2Body;
     private arm:b2Body;
     private right_joint:b2RevoluteJoint;
     private left_joint:b2RevoluteJoint;
+    private arm_joint:b2RevoluteJoint;
+
     private all_wheels:b2Body[] = [];
 
+    private arm_speed = 2;
     private turning_speed = 10;
     private motor_force = 300;
 
@@ -126,16 +128,20 @@ class Tow_truck extends Body
         this.arm.CreateFixture(fix_def);
 
         var revolute_def = new b2RevoluteJointDef();
+        revolute_def.enableMotor = true;
+        revolute_def.maxMotorTorque = 10;
         revolute_def.enableLimit = true;
         revolute_def.upperAngle = 0.3;
         revolute_def.lowerAngle = -revolute_def.upperAngle;
 
         revolute_def.Initialize(this.body, this.arm, this.arm.GetWorldPoint(new b2Vec2(0, -2)));
-        this.world.CreateJoint(revolute_def);
+        this.arm_joint = <b2RevoluteJoint>this.world.CreateJoint(revolute_def);
     }
 
     public on_tick():void
     {
+        var to_center = 0;
+
         if (g_input.forward || g_input.backwards)
         {
             var multiplier = this.motor_force * (g_input.forward ? -1 : 1);
@@ -150,7 +156,7 @@ class Tow_truck extends Body
 
         if (g_input.right == g_input.left)
         {
-            var to_center = -this.right_joint.GetJointAngle();
+            to_center = -this.right_joint.GetJointAngle();
             this.right_joint.SetMotorSpeed(to_center * this.turning_speed);
             to_center = -this.left_joint.GetJointAngle();
             this.left_joint.SetMotorSpeed(to_center * this.turning_speed);
@@ -166,6 +172,9 @@ class Tow_truck extends Body
             this.left_joint.SetMotorSpeed(-this.turning_speed);
         }
 
+        to_center = -this.arm_joint.GetJointAngle();
+        this.arm_joint.SetMotorSpeed(to_center * this.arm_speed);
+
         for (var i = 0; i < this.all_wheels.length; ++i)
         {
             var wheel = this.all_wheels[i];
@@ -178,5 +187,12 @@ class Tow_truck extends Body
 
             wheel.SetLinearVelocity(sidewaysAxis);
         }
+    }
+
+    public tow(towed:Body):void
+    {
+        var revolute_def = new b2RevoluteJointDef();
+        revolute_def.Initialize(this.arm, towed.body, this.arm.GetWorldPoint(new b2Vec2(0, 2)));
+        this.world.CreateJoint(revolute_def);
     }
 }

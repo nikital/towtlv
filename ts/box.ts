@@ -14,8 +14,9 @@ class Box extends Body
         var poly = new b2PolygonShape();
         poly.SetAsBox(width, height);
         fix_def.shape = poly;
-        fix_def.density = 0.1;
+        fix_def.density = 1;
 
-        this.world.CreateBody(body_def).CreateFixture(fix_def);
+        this.body = this.world.CreateBody(body_def);
+        this.body.CreateFixture(fix_def);
     }
 }
