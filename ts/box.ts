@@ -2,7 +2,7 @@ class Box extends Body
 {
     private bitmap:createjs.Bitmap;
 
-    constructor(private world:b2World, name:string, private position:b2Vec2, private kill_orho:boolean = false)
+    constructor(private world:b2World, name:string, position:b2Vec2, angle:number = 0, private kill_orho:boolean = false)
     {
         super();
 
@@ -16,6 +16,7 @@ class Box extends Body
         var body_def = new b2BodyDef();
         body_def.type = b2Body.b2_dynamicBody;
         body_def.position = position;
+        body_def.angle = angle;
         body_def.linearDamping = 3;
         body_def.angularDamping = 2;
 
