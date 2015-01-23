@@ -6,6 +6,7 @@ class Tow_truck extends Body
     private right_joint:b2RevoluteJoint;
     private left_joint:b2RevoluteJoint;
     private arm_joint:b2RevoluteJoint;
+    private tow_joint:b2RevoluteJoint;
 
     private all_wheels:b2Body[] = [];
 
@@ -196,11 +197,25 @@ class Tow_truck extends Body
 
         var revolute_def = new b2RevoluteJointDef();
         revolute_def.Initialize(this.arm, towed.body, contact_point);
-        this.world.CreateJoint(revolute_def);
+        this.tow_joint = <b2RevoluteJoint>this.world.CreateJoint(revolute_def);
+    }
+
+    public stop_tow():void
+    {
+        if (this.tow_joint)
+        {
+            this.world.DestroyJoint(this.tow_joint);
+            this.tow_joint = null;
+        }
     }
 
     public can_tow(towed:Body):boolean
     {
+        if (this.is_towing())
+        {
+            return false;
+        }
+
         var contact_point = this.arm.GetWorldPoint(new b2Vec2(0, this.arm_half_len));
         var colliding = false
         var fixture = towed.body.GetFixtureList();
@@ -214,5 +229,10 @@ class Tow_truck extends Body
         }
 
         return colliding;
+    }
+
+    public is_towing():boolean
+    {
+        return this.tow_joint != null;
     }
 }
