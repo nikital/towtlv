@@ -1,4 +1,4 @@
-class Tow_truck
+class Tow_truck extends Body
 {
     private body:b2Body;
     private right:b2Body;
@@ -8,10 +8,12 @@ class Tow_truck
     private all_wheels:b2Body[] = [];
 
     private turning_speed = 10;
-    private motor_force = 100;
+    private motor_force = 300;
 
     constructor(private world:b2World, position:b2Vec2)
     {
+        super();
+
         this.create_body(position);
         this.create_wheels(position);
     }
@@ -47,7 +49,7 @@ class Tow_truck
         var poly = new b2PolygonShape();
         poly.SetAsBox(0.15, 0.4);
         fix_def.shape = poly;
-        fix_def.density = 10;
+        fix_def.density = 20;
 
         body_def.position = position.Copy();
         body_def.position.Add(new b2Vec2(wheel_offset.x, -wheel_offset.y));
@@ -115,7 +117,14 @@ class Tow_truck
             this.left.ApplyForce(vec, this.left.GetPosition());
         }
 
-        if (g_input.right)
+        if (g_input.right == g_input.left)
+        {
+            var to_center = -this.right_joint.GetJointAngle();
+            this.right_joint.SetMotorSpeed(to_center * this.turning_speed);
+            to_center = -this.left_joint.GetJointAngle();
+            this.left_joint.SetMotorSpeed(to_center * this.turning_speed);
+        }
+        else if (g_input.right)
         {
             this.right_joint.SetMotorSpeed(this.turning_speed);
             this.left_joint.SetMotorSpeed(this.turning_speed);
@@ -124,13 +133,6 @@ class Tow_truck
         {
             this.right_joint.SetMotorSpeed(-this.turning_speed);
             this.left_joint.SetMotorSpeed(-this.turning_speed);
-        }
-        if (!g_input.right && !g_input.left)
-        {
-            var to_center = -this.right_joint.GetJointAngle();
-            this.right_joint.SetMotorSpeed(to_center * this.turning_speed);
-            to_center = -this.left_joint.GetJointAngle();
-            this.left_joint.SetMotorSpeed(to_center * this.turning_speed);
         }
 
         for (var i = 0; i < this.all_wheels.length; ++i)

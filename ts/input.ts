@@ -4,6 +4,7 @@ class Input
     public backwards = false;
     public right = false;
     public left = false;
+    public tow = false;
 
     constructor()
     {
@@ -27,6 +28,9 @@ class Input
             case 40:
                 this.backwards = true;
                 break;
+            case 32:
+                this.tow = true;
+                break;
             default:
                 return;
         }
@@ -49,6 +53,9 @@ class Input
                 break;
             case 40:
                 this.backwards = false;
+                break;
+            case 32:
+                this.tow = false;
                 break;
             default:
                 return;
