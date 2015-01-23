@@ -6,9 +6,12 @@ PRELOAD_FILES := $(shell find $(PRELOAD_DIRS) -type f)
 
 .PHONY: all clean watch server
 
-all: js/main.js js/preload_manifest.js
+all: js/main.js js/editor.js js/preload_manifest.js
 
 js/main.js: ts/main.ts $(TS_FILES)
+	$(TSC) -t ES5 --out $@ $<
+
+js/editor.js: ts/editor.ts $(TS_FILES)
 	$(TSC) -t ES5 --out $@ $<
 
 js/preload_manifest.js: $(PRELOAD_FILES)
