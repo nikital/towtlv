@@ -13,7 +13,7 @@ class Tow_truck extends Body
     private arm_speed = 2;
     private turning_speed = 10;
     private motor_force = 300;
-    private arm_half_len = 2;
+    private arm_half_len = 2.2;
 
     constructor(private world:b2World, position:b2Vec2)
     {
@@ -34,7 +34,7 @@ class Tow_truck extends Body
 
         var fix_def = new b2FixtureDef();
         var poly = new b2PolygonShape();
-        poly.SetAsBox(1.5, 3);
+        poly.SetAsBox(1.5, 3.5);
         fix_def.shape = poly;
         fix_def.density = 1;
 
@@ -44,7 +44,7 @@ class Tow_truck extends Body
 
     private create_wheels():void
     {
-        var wheel_offset = new b2Vec2(1.2, 2.3);
+        var wheel_offset = new b2Vec2(1.2, 2.7);
 
         var body_def = new b2BodyDef();
         body_def.type = b2Body.b2_dynamicBody;
@@ -131,7 +131,7 @@ class Tow_truck extends Body
 
         var revolute_def = new b2RevoluteJointDef();
         revolute_def.enableMotor = true;
-        revolute_def.maxMotorTorque = 10;
+        revolute_def.maxMotorTorque = 20;
         revolute_def.enableLimit = true;
         revolute_def.upperAngle = 0.3;
         revolute_def.lowerAngle = -revolute_def.upperAngle;

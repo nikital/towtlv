@@ -22,7 +22,7 @@ class Level
             }
         }
 
-        this.towed = new Box(this.world, 2, 2, new b2Vec2(j*0.5+i*1.5, j*1.5), 0.3);
+        this.towed = new Box(this.world, 0.85, 2.25, new b2Vec2(j*0.5+i*1.5, j*1.5), 0.3);
     }
 
     private init_phys():void
