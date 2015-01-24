@@ -5,6 +5,7 @@
 class Level extends createjs.Container implements b2ContactListener
 {
     private world:b2World;
+    private prev_frame_time:number = new Date().getTime();
     private tow_truck:Tow_truck;
     private towed:Box;
 
@@ -56,6 +57,11 @@ class Level extends createjs.Container implements b2ContactListener
 
     public on_tick():void
     {
+        var now = new Date().getTime();
+        var dt = now - this.prev_frame_time;
+        this.prev_frame_time = now;
+        // console.log(dt);
+
         if (g_input.tow)
         {
             g_input.tow = false;
@@ -74,7 +80,7 @@ class Level extends createjs.Container implements b2ContactListener
             this.ticked[i].on_tick();
         }
 
-        this.world.Step(1/60, 6, 3);
+        this.world.Step(dt/1000, 6, 3);
         this.world.ClearForces();
 
         if (!this.failed)
