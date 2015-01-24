@@ -105,6 +105,7 @@ class Level extends createjs.Container implements b2ContactListener
                || (b.x < -b.width))
             {
                 this.dispatchEvent(new createjs.Event('win', false, false));
+                createjs.Sound.stop();
                 this.sent_win = true;
             }
 
@@ -117,6 +118,7 @@ class Level extends createjs.Container implements b2ContactListener
                     || (b.x < -b.width - 100))
                 {
                     this.dispatchEvent(new createjs.Event('fail', false, false));
+                    createjs.Sound.stop();
                     this.failed = true;
                 }
             }
@@ -131,6 +133,7 @@ class Level extends createjs.Container implements b2ContactListener
     private fail():void
     {
         this.dispatchEvent(new createjs.Event('fail', false, false));
+        createjs.Sound.stop();
     }
 
     public BeginContact(contact: b2Contact): void
