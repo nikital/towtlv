@@ -156,6 +156,20 @@ class Editor
                     this.modal = Modal.Rotate;
                 }
                 break;
+            case 'D'.charCodeAt(0):
+                if (this.active_prop)
+                {
+                    var bitmap = this.active_prop.bitmap.clone();
+                    this.stage.addChild(bitmap);
+                    bitmap.on('click', this.on_click, this);
+
+                    this.props.push({bitmap:bitmap, prop:this.active_prop.prop, name: this.active_prop.name});
+
+                    var simulated = new createjs.MouseEvent('click', false, true, 0, 0, null, 0, true, 0, 0);
+                    bitmap.dispatchEvent(simulated);
+                    this.modal = Modal.Grab;
+                }
+                break;
             case 'X'.charCodeAt(0):
                 if (this.active_prop)
                 {
@@ -190,7 +204,7 @@ class Editor
         for (var i = 0; i < this.props.length; ++i)
         {
             var prop = this.props[i];
-            data.props.push({prop:prop.name, x:prop.bitmap.x, y:prop.bitmap.y, rotation:prop.bitmap.rotation});
+            data.props.push({prop:prop.name, x:prop.bitmap.x, y:prop.bitmap.y, rotation:Math.floor(prop.bitmap.rotation)});
         }
 
         (<HTMLTextAreaElement>document.getElementById("level")).value = JSON.stringify(data);
@@ -221,6 +235,7 @@ class Editor
 
             this.props.push({bitmap:bitmap, prop:prop, name: name});
         }
+        (<HTMLTextAreaElement>document.getElementById("level")).value = '';
     }
 }
 

@@ -25,4 +25,10 @@ var Props:{[index:string]:Prop} = {
         dynamic: true,
         kill_ortho: true,
     },
+    wall: {
+        bitmap_path: 'editor_wall',
+        density: 0,
+        dynamic: false,
+        kill_ortho: false,
+    },
 };
