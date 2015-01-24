@@ -190,10 +190,10 @@ class Editor
         for (var i = 0; i < this.props.length; ++i)
         {
             var prop = this.props[i];
-            data.props.push({prop:prop.name, x:prop.bitmap.x, y:prop.bitmap.y});
+            data.props.push({prop:prop.name, x:prop.bitmap.x, y:prop.bitmap.y, rotation:prop.bitmap.rotation});
         }
 
-        document.getElementById("level").value = JSON.stringify(data);
+        (<HTMLTextAreaElement>document.getElementById("level")).value = JSON.stringify(data);
     }
 
     private import_level():void
@@ -203,7 +203,7 @@ class Editor
         this.active_prop = null;
         this.modal = Modal.None;
 
-        var data = JSON.parse(document.getElementById("level").value);
+        var data = JSON.parse((<HTMLTextAreaElement>document.getElementById("level")).value);
         for (var i = 0; i < data.props.length; ++i)
         {
             var name = data.props[i].prop;
@@ -214,6 +214,7 @@ class Editor
             bitmap.regY = bitmap.getBounds().height / 2;
             bitmap.x = data.props[i].x;
             bitmap.y = data.props[i].y;
+            bitmap.rotation = data.props[i].rotation;
             this.stage.addChild(bitmap);
 
             bitmap.on('click', this.on_click, this);
