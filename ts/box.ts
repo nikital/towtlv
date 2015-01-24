@@ -16,7 +16,7 @@ class Box extends Body
         this.bitmap.regX = half_width;
         this.bitmap.regY = half_height;
 
-        if (!prop.bitmap_path.match(/^editor_/))
+        if (1 || !prop.bitmap_path.match(/^editor_/))
         {
             this.container.addChild(this.bitmap);
         }
