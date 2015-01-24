@@ -1,5 +1,6 @@
 /// <reference path="box2d_imports.ts" />
 /// <reference path="defs/easeljs/easeljs.d.ts" />
+/// <reference path="defs/tweenjs/tweenjs.d.ts" />
 /// <reference path="defs/generated.d.ts" />
 /// <reference path="common.ts" />
 /// <reference path="input.ts" />
@@ -10,6 +11,7 @@
 class Main
 {
     private debug_draw = new b2DebugDraw();
+    private cloak:createjs.Shape;
     private stage:createjs.Stage;
     private curr_level:number = 0;
     private level:Level;
@@ -21,6 +23,10 @@ class Main
         g_input = new Input();
 
         this.stage = new createjs.Stage(canvas);
+
+        this.cloak = new createjs.Shape();
+        this.cloak.graphics.beginFill('black').drawRect(0, 0, canvas.width, canvas.height);
+        this.cloak.alpha = 0;
 
         this.debug_draw.SetSprite(canvas.getContext("2d"));
         this.debug_draw.SetDrawScale(g_common.pixel_scale);
@@ -51,7 +57,7 @@ class Main
         this.level = new Level(this.curr_level, this.debug_draw);
         this.level.on('fail', this.on_fail, this);
         this.level.on('win', this.on_win, this);
-        this.stage.addChild(this.level);
+        this.stage.addChildAt(this.level, 0);
 
         console.log('Loaded level', level);
     }
@@ -74,12 +80,22 @@ class Main
 
     private on_win(e:createjs.Event):void
     {
-        this.load_level(this.curr_level + 1);
+        this.do_transition(() => {
+            this.load_level(this.curr_level+1);
+        });
     }
 
     private on_fail(e:createjs.Event):void
     {
-        this.load_level(this.curr_level);
+        this.do_transition(() => {
+            this.load_level(this.curr_level);
+        });
+    }
+
+    private do_transition(callback:any):void
+    {
+        this.stage.addChild(this.cloak);
+        createjs.Tween.get(this.cloak).to({alpha:1}, 300).call(callback).to({alpha:0}, 200);
     }
 }
 

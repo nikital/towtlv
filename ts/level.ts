@@ -12,6 +12,7 @@ class Level extends createjs.Container implements b2ContactListener
     private ticked:Body[] = [];
 
     private failed = false;
+    private sent_win = false;
 
     constructor(level_id:number, private debug_draw:b2DebugDraw)
     {
@@ -83,7 +84,7 @@ class Level extends createjs.Container implements b2ContactListener
         this.world.Step(dt/1000, 6, 3);
         this.world.ClearForces();
 
-        if (!this.failed)
+        if (!this.failed && !this.sent_win)
         {
             var b = this.towed.container.getTransformedBounds();
             if ((b.y > g_common.canvas.height)
@@ -92,6 +93,7 @@ class Level extends createjs.Container implements b2ContactListener
                || (b.x < -b.width))
             {
                 this.dispatchEvent(new createjs.Event('win', false, false));
+                this.sent_win = true;
             }
         }
     }
