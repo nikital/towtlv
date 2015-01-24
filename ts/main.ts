@@ -26,7 +26,7 @@ class Main
 
         this.cloak = new createjs.Shape();
         this.cloak.graphics.beginFill('black').drawRect(0, 0, canvas.width, canvas.height);
-        this.cloak.alpha = 0;
+        this.do_transition(() => {});
 
         this.debug_draw.SetSprite(canvas.getContext("2d"));
         this.debug_draw.SetDrawScale(g_common.pixel_scale);

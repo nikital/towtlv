@@ -27,6 +27,9 @@ class Editor
     private active_prop:LevelProp;
     private active_filter:createjs.ColorFilter = new createjs.ColorFilter(1, 1, 0.5, 1, 50, 15, 0, 0);
 
+    private background_path = "bg/plain";
+    private background:createjs.Bitmap;
+
     private modal = Modal.None;
 
     constructor(private canvas:HTMLCanvasElement)
@@ -41,6 +44,9 @@ class Editor
     private on_preload():void
     {
         this.prepare_props();
+
+        this.background = new createjs.Bitmap(Preload.get_bitmap(this.background_path));
+        this.stage.addChild(this.background);
 
         this.stage.on('stagemousemove', this.on_mouse_move, this);
         this.stage.on('stagemouseup', this.on_mouse_click, this);
@@ -191,6 +197,10 @@ class Editor
                 console.log('Loading', to_load);
                 this.import_level(g_levels[to_load]);
                 break;
+            case 'B'.charCodeAt(0):
+                this.background_path = prompt('Background:', 'bg/plain');
+                this.background.image = Preload.get_bitmap(this.background_path);
+                break;
             default:
                 return;
         }
@@ -201,7 +211,7 @@ class Editor
     private export_level():void
     {
         var data:LevelData = {
-            background: '',
+            background: this.background_path,
             props: [
             ],
         }
@@ -221,6 +231,10 @@ class Editor
         this.props = [];
         this.active_prop = null;
         this.modal = Modal.None;
+
+        this.background_path = data.background;
+        this.background.image = Preload.get_bitmap(data.background);
+        this.stage.addChild(this.background);
 
         for (var i = 0; i < data.props.length; ++i)
         {
