@@ -2,13 +2,15 @@
 /// <reference path="box.ts" />
 /// <reference path="tow_truck.ts" />
 
-class Level extends createjs.Container
+class Level extends createjs.Container implements b2ContactListener
 {
     private world:b2World;
     private tow_truck:Tow_truck;
     private towed:Box;
 
     private ticked:Body[] = [];
+
+    private failed = false;
 
     constructor(level_id:number, private debug_draw:b2DebugDraw)
     {
@@ -47,6 +49,7 @@ class Level extends createjs.Container
     {
         var gravity = new b2Vec2(0, 0);
         this.world = new b2World(gravity, true);
+        this.world.SetContactListener(this);
 
         this.world.SetDebugDraw(this.debug_draw);
     }
@@ -78,5 +81,44 @@ class Level extends createjs.Container
     public draw_debug():void
     {
         this.world.DrawDebugData();
+    }
+
+    private fail():void
+    {
+        this.dispatchEvent(new createjs.Event('fail', false, false));
+    }
+
+    public BeginContact(contact: b2Contact): void
+    {
+    }
+    public EndContact(contact: b2Contact): void
+    {
+    }
+    public PreSolve(contact: b2Contact, oldManifold: Box2D.Collision.b2Manifold): void
+    {
+    }
+    public PostSolve(contact: b2Contact, impulse: b2ContactImpulse): void
+    {
+        var body_a = contact.GetFixtureA().GetBody();
+        var body_b = contact.GetFixtureB().GetBody();
+
+        var normal_impulse = 0;
+        if (body_a == this.towed.body || body_b == this.towed.body)
+        {
+            normal_impulse = impulse.normalImpulses[0];
+            if (this.tow_truck.is_towing() && (body_a == this.tow_truck.body || body_b == this.tow_truck.body))
+            {
+                normal_impulse = 0;
+            }
+        }
+
+        if (normal_impulse > 2)
+        {
+            if (!this.failed)
+            {
+                this.failed = true;
+                setTimeout(this.fail.bind(this), 1000);
+            }
+        }
     }
 }

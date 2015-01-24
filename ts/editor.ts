@@ -207,7 +207,7 @@ class Editor
             data.props.push({prop:prop.name, x:prop.bitmap.x, y:prop.bitmap.y, rotation:Math.floor(prop.bitmap.rotation)});
         }
 
-        (<HTMLTextAreaElement>document.getElementById("level")).value = JSON.stringify(data) + '\n';
+        (<HTMLTextAreaElement>document.getElementById("level")).value = JSON.stringify(data);
     }
 
     private import_level():void

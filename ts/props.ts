@@ -23,7 +23,7 @@ var Props:{[index:string]:Prop} = {
         bitmap_path: 'target',
         density: 2,
         dynamic: true,
-        kill_ortho: true,
+        kill_ortho: false,
     },
     tow: {
         bitmap_path: 'tow_body',

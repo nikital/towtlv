@@ -33,6 +33,7 @@ class Main
     private on_preload():void
     {
         this.level = new Level(0, this.debug_draw);
+        this.level.on('fail', this.on_fail, this);
         this.stage.addChild(this.level);
 
         this.on_tick();
@@ -40,11 +41,25 @@ class Main
 
     private on_tick():void
     {
-        this.level.on_tick();
-        setTimeout(this.on_tick.bind(this), 1000 / 60);
+        if (this.level)
+        {
+            this.level.on_tick();
+        }
 
         this.stage.update();
-        // this.level.draw_debug();
+        if (this.level)
+        {
+            // this.level.debug_draw();
+        }
+
+        setTimeout(this.on_tick.bind(this), 1000 / 60);
+    }
+
+    private on_fail(e:createjs.Event):void
+    {
+        alert('failed');
+        this.stage.removeChild(this.level);
+        this.level = null;
     }
 }
 

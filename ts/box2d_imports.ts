@@ -12,5 +12,8 @@ import b2FixtureDef = Box2D.Dynamics.b2FixtureDef;
 import b2RevoluteJoint = Box2D.Dynamics.Joints.b2RevoluteJoint;
 import b2RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef;
 import b2PrismaticJointDef = Box2D.Dynamics.Joints.b2PrismaticJointDef;
+import b2ContactListener = Box2D.Dynamics.b2ContactListener;
+import b2Contact = Box2D.Dynamics.Contacts.b2Contact;
+import b2ContactImpulse = Box2D.Dynamics.b2ContactImpulse;
 
 import b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape;
