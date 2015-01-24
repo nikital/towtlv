@@ -56,7 +56,9 @@ class Main
         this.level.on('fail', this.on_fail, this);
         this.level.on('win', this.on_win, this);
         this.stage.addChild(this.level);
+        
 
+        createjs.Sound.setVolume(0.3);
         console.log('Loaded level', level);
     }
 

@@ -1,4 +1,5 @@
 /// <reference path="body.ts" />
+/// <reference path="preload.ts" />
 /// <reference path="box.ts" />
 /// <reference path="tow_truck.ts" />
 
@@ -60,18 +61,18 @@ class Level extends createjs.Container implements b2ContactListener
         var now = new Date().getTime();
         var dt = now - this.prev_frame_time;
         this.prev_frame_time = now;
-        // console.log(dt);
 
         if (g_input.tow)
         {
             g_input.tow = false;
+
             if (this.tow_truck.is_towing())
             {
                 this.tow_truck.stop_tow();
             }
             else if (this.tow_truck.can_tow(this.towed))
             {
-                this.tow_truck.tow(this.towed);
+                this.tow_truck.tow(this.towed)
             }
         }
 

@@ -1,3 +1,11 @@
+
+enum TowSound 
+{
+    None,
+    WithGas,
+    NoGas,
+}
+
 class Tow_truck extends Body
 {
     private right:b2Body;
@@ -17,6 +25,9 @@ class Tow_truck extends Body
     private turning_speed = 10;
     private motor_force = 300;
     private arm_half_len = 2.2;
+    private tow_sound = TowSound.None;
+    private first_time_in_sound = true;
+    private first_sound_over = false;
 
     constructor(private world:b2World, position:b2Vec2)
     {
@@ -160,11 +171,84 @@ class Tow_truck extends Body
         this.container.addChild(this.bitmap_arm);
     }
 
+    private finished_first_sound():void
+    {
+        console.log("finished first sound!");
+        this.first_sound_over = true;
+        this.play_sound(TowSound.NoGas);
+    }
+
+    private remove_prev_sound(snd):void
+    {
+        var snd_str = null;
+        if(snd == TowSound.None)
+        {
+            return;
+        }
+        if(snd == TowSound.WithGas)
+        {
+           snd_str = "tow_velocity"; 
+        }
+        else if(snd == TowSound.NoGas)
+        {
+           snd_str = "tow_no_velocity"; 
+        }
+
+        if(snd_str == null)
+        {
+            return;
+        }
+
+        createjs.Sound.removeSound(Preload.get_sound(snd_str), null);
+        createjs.Sound.stop();
+    }
+    
+
+    public play_sound(sound_to_play:TowSound):void
+    {
+        if(true == this.first_time_in_sound)
+        {
+            var start_sound = createjs.Sound.play(Preload.get_sound("tow_rumble_start"), {duration:4600});
+            start_sound.on('complete', this.finished_first_sound ,this);
+            this.first_time_in_sound = false;
+        }
+
+        if(sound_to_play == this.tow_sound)
+        {
+            return;
+        }
+        
+        if(sound_to_play == TowSound.WithGas)
+        {
+             console.log("withgas");
+             createjs.Sound.stop();
+             createjs.Sound.play(Preload.get_sound("tow_velocity"), {loop: -1});
+        }
+
+        else if(sound_to_play == TowSound.NoGas)
+        {
+             console.log("nogas");
+             createjs.Sound.stop();
+             createjs.Sound.play(Preload.get_sound("tow_no_velocity"), {loop: -1});
+        }
+        else // None
+        {
+             createjs.Sound.stop();
+        }
+
+        // this.remove_prev_sound(this.tow_sound);
+
+        this.tow_sound = sound_to_play;
+    }
+
     public on_tick():void
     {
         var to_center = 0;
+        var has_velocity = g_input.forward || g_input.backwards;
+        var sound_to_play = has_velocity ? TowSound.WithGas : TowSound.NoGas;
+        this.play_sound(sound_to_play);
 
-        if (g_input.forward || g_input.backwards)
+        if (has_velocity)
         {
             var multiplier = this.motor_force * (g_input.forward ? -1 : 1);
             var vec = this.right.GetTransform().R.col2.Copy();
