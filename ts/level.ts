@@ -106,6 +106,19 @@ class Level extends createjs.Container implements b2ContactListener
                 this.dispatchEvent(new createjs.Event('win', false, false));
                 this.sent_win = true;
             }
+
+            if (!this.sent_win && !this.tow_truck.is_towing())
+            {
+                b = this.tow_truck.container.getTransformedBounds();
+                if ((b.y > g_common.canvas.height + 100)
+                    ||( b.y < -b.height - 100)
+                    || (b.x > g_common.canvas.width + 100)
+                    || (b.x < -b.width - 100))
+                {
+                    this.dispatchEvent(new createjs.Event('fail', false, false));
+                    this.failed = true;
+                }
+            }
         }
     }
 
