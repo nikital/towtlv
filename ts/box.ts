@@ -15,7 +15,15 @@ class Box extends Body
         var half_height = this.bitmap.getBounds().height/2;
         this.bitmap.regX = half_width;
         this.bitmap.regY = half_height;
-        this.container.addChild(this.bitmap);
+
+        if (!prop.bitmap_path.match(/^editor_/))
+        {
+            this.container.addChild(this.bitmap);
+        }
+        else
+        {
+            this.bitmap = null;
+        }
 
         position = position.Copy();
         position.Multiply(1/g_common.pixel_scale);
@@ -27,9 +35,18 @@ class Box extends Body
         body_def.angularDamping = 2;
 
         var fix_def = new b2FixtureDef();
-        var poly = new b2PolygonShape();
-        poly.SetAsBox((half_width-2) / g_common.pixel_scale, (half_height-2) / g_common.pixel_scale);
-        fix_def.shape = poly;
+
+        if (prop.circular)
+        {
+            fix_def.shape = new b2CircleShape((half_width-2) / g_common.pixel_scale);
+        }
+        else
+        {
+            var poly = new b2PolygonShape();
+            poly.SetAsBox((half_width-2) / g_common.pixel_scale, (half_height-2) / g_common.pixel_scale);
+            fix_def.shape = poly;
+        }
+
         fix_def.density = prop.density;
 
         this.body = this.world.CreateBody(body_def);
@@ -50,6 +67,9 @@ class Box extends Body
             this.body.SetAngularVelocity(0);
         }
 
-        g_common.align_sprite_to_phys(this.bitmap, this.body);
+        if (this.bitmap)
+        {
+            g_common.align_sprite_to_phys(this.bitmap, this.body);
+        }
     }
 }

@@ -1,5 +1,6 @@
 /// <reference path="box2d_imports.ts" />
 /// <reference path="defs/easeljs/easeljs.d.ts" />
+/// <reference path="defs/tweenjs/tweenjs.d.ts" />
 /// <reference path="defs/generated.d.ts" />
 /// <reference path="common.ts" />
 /// <reference path="input.ts" />
@@ -11,6 +12,8 @@
 class Main
 {
     private debug_draw = new b2DebugDraw();
+    private cloak:createjs.Shape;
+    private loading:createjs.Text;
     private stage:createjs.Stage;
     private curr_level:number = 0;
     private level:Level;
@@ -23,6 +26,14 @@ class Main
 
         this.stage = new createjs.Stage(canvas);
 
+        this.cloak = new createjs.Shape();
+        this.cloak.graphics.beginFill('black').drawRect(0, 0, canvas.width, canvas.height);
+        this.stage.addChild(this.cloak);
+
+        this.loading = new createjs.Text("Loading...", "20px Arial", "white");
+        this.loading.x = this.loading.y = 10;
+        this.stage.addChild(this.loading);
+
         this.debug_draw.SetSprite(canvas.getContext("2d"));
         this.debug_draw.SetDrawScale(g_common.pixel_scale);
         this.debug_draw.SetFillAlpha(0.5);
@@ -34,13 +45,17 @@ class Main
 
         Preload.queue.on("complete", this.on_preload, this);
         Preload.queue.loadManifest(preload_manifest);
+
+        this.on_tick();
     }
 
     private on_preload():void
     {
-        this.load_level(0);
+        this.stage.removeChild(this.loading);
+        this.loading = null;
 
-        this.on_tick();
+        this.do_transition(() => {});
+        this.load_level(0);
     }
 
     private load_level(level:number):void
@@ -55,8 +70,7 @@ class Main
         this.level = new Level(this.curr_level, this.debug_draw);
         this.level.on('fail', this.on_fail, this);
         this.level.on('win', this.on_win, this);
-        this.stage.addChild(this.level);
-        
+        this.stage.addChildAt(this.level, 0);
 
         createjs.Sound.setVolume(0.3);
         console.log('Loaded level', level);
@@ -72,7 +86,7 @@ class Main
         this.stage.update();
         if (this.level)
         {
-            // this.level.debug_draw();
+            // this.level.draw_debug();
         }
 
         setTimeout(this.on_tick.bind(this), 1000 / 60);
@@ -80,12 +94,22 @@ class Main
 
     private on_win(e:createjs.Event):void
     {
-        this.load_level(this.curr_level + 1);
+        this.do_transition(() => {
+            this.load_level(this.curr_level+1);
+        });
     }
 
     private on_fail(e:createjs.Event):void
     {
-        this.load_level(this.curr_level);
+        this.do_transition(() => {
+            this.load_level(this.curr_level);
+        });
+    }
+
+    private do_transition(callback:any):void
+    {
+        this.stage.addChild(this.cloak);
+        createjs.Tween.get(this.cloak).to({alpha:1}, 300).call(callback).to({alpha:0}, 200);
     }
 }
 

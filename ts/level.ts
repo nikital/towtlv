@@ -12,7 +12,10 @@ class Level extends createjs.Container implements b2ContactListener
 
     private ticked:Body[] = [];
 
+    private tow_status:createjs.Bitmap;
+
     private failed = false;
+    private sent_win = false;
 
     constructor(level_id:number, private debug_draw:b2DebugDraw)
     {
@@ -21,6 +24,9 @@ class Level extends createjs.Container implements b2ContactListener
         this.init_phys();
 
         var data = g_levels[level_id];
+
+        var bg = new createjs.Bitmap(Preload.get_bitmap(data.background));
+        this.addChild(bg);
 
         for (var i = 0; i < data.props.length; ++i)
         {
@@ -45,6 +51,10 @@ class Level extends createjs.Container implements b2ContactListener
         }
 
         this.addChild(this.tow_truck.container);
+
+        this.tow_status = new createjs.Bitmap(Preload.get_bitmap("ui/tow_up"));
+        this.tow_status.x = this.tow_status.y = 20;
+        this.addChild(this.tow_status);
     }
 
     private init_phys():void
@@ -69,10 +79,12 @@ class Level extends createjs.Container implements b2ContactListener
             if (this.tow_truck.is_towing())
             {
                 this.tow_truck.stop_tow();
+                this.tow_status.image = Preload.get_bitmap("ui/tow_up");
             }
             else if (this.tow_truck.can_tow(this.towed))
             {
-                this.tow_truck.tow(this.towed)
+                this.tow_truck.tow(this.towed);
+                this.tow_status.image = Preload.get_bitmap("ui/tow_down");
             }
         }
 
@@ -84,7 +96,7 @@ class Level extends createjs.Container implements b2ContactListener
         this.world.Step(dt/1000, 6, 3);
         this.world.ClearForces();
 
-        if (!this.failed)
+        if (!this.failed && !this.sent_win)
         {
             var b = this.towed.container.getTransformedBounds();
             if ((b.y > g_common.canvas.height)
@@ -93,6 +105,20 @@ class Level extends createjs.Container implements b2ContactListener
                || (b.x < -b.width))
             {
                 this.dispatchEvent(new createjs.Event('win', false, false));
+                this.sent_win = true;
+            }
+
+            if (!this.sent_win && !this.tow_truck.is_towing())
+            {
+                b = this.tow_truck.container.getTransformedBounds();
+                if ((b.y > g_common.canvas.height + 100)
+                    ||( b.y < -b.height - 100)
+                    || (b.x > g_common.canvas.width + 100)
+                    || (b.x < -b.width - 100))
+                {
+                    this.dispatchEvent(new createjs.Event('fail', false, false));
+                    this.failed = true;
+                }
             }
         }
     }
