@@ -22,6 +22,9 @@ class Level extends createjs.Container implements b2ContactListener
 
         var data = g_levels[level_id];
 
+        var bg = new createjs.Bitmap(Preload.get_bitmap(data.background));
+        this.addChild(bg);
+
         for (var i = 0; i < data.props.length; ++i)
         {
             var prop_data = data.props[i];
