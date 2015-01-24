@@ -11,6 +11,8 @@ class Level extends createjs.Container implements b2ContactListener
 
     private ticked:Body[] = [];
 
+    private tow_status:createjs.Bitmap;
+
     private failed = false;
     private sent_win = false;
 
@@ -48,6 +50,10 @@ class Level extends createjs.Container implements b2ContactListener
         }
 
         this.addChild(this.tow_truck.container);
+
+        this.tow_status = new createjs.Bitmap(Preload.get_bitmap("ui/tow_up"));
+        this.tow_status.x = this.tow_status.y = 20;
+        this.addChild(this.tow_status);
     }
 
     private init_phys():void
@@ -72,10 +78,12 @@ class Level extends createjs.Container implements b2ContactListener
             if (this.tow_truck.is_towing())
             {
                 this.tow_truck.stop_tow();
+                this.tow_status.image = Preload.get_bitmap("ui/tow_up");
             }
             else if (this.tow_truck.can_tow(this.towed))
             {
                 this.tow_truck.tow(this.towed);
+                this.tow_status.image = Preload.get_bitmap("ui/tow_down");
             }
         }
 
