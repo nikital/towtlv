@@ -195,7 +195,7 @@ class Editor
 
     private export_level():void
     {
-        var data = {
+        var data:LevelData = {
             background: '',
             props: [
             ],
