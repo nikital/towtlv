@@ -15,7 +15,15 @@ class Box extends Body
         var half_height = this.bitmap.getBounds().height/2;
         this.bitmap.regX = half_width;
         this.bitmap.regY = half_height;
-        this.container.addChild(this.bitmap);
+
+        if (!prop.bitmap_path.match(/^editor_/))
+        {
+            this.container.addChild(this.bitmap);
+        }
+        else
+        {
+            this.bitmap = null;
+        }
 
         position = position.Copy();
         position.Multiply(1/g_common.pixel_scale);
@@ -50,6 +58,9 @@ class Box extends Body
             this.body.SetAngularVelocity(0);
         }
 
-        g_common.align_sprite_to_phys(this.bitmap, this.body);
+        if (this.bitmap)
+        {
+            g_common.align_sprite_to_phys(this.bitmap, this.body);
+        }
     }
 }
