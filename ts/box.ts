@@ -17,6 +17,8 @@ class Box extends Body
         this.bitmap.regY = half_height;
         this.container.addChild(this.bitmap);
 
+        position = position.Copy();
+        position.Multiply(1/g_common.pixel_scale);
         var body_def = new b2BodyDef();
         body_def.type = prop.dynamic ? b2Body.b2_dynamicBody : b2Body.b2_staticBody;
         body_def.position = position;
@@ -26,7 +28,7 @@ class Box extends Body
 
         var fix_def = new b2FixtureDef();
         var poly = new b2PolygonShape();
-        poly.SetAsBox((half_width-4) / g_common.pixel_scale, (half_height-4) / g_common.pixel_scale);
+        poly.SetAsBox((half_width-2) / g_common.pixel_scale, (half_height-2) / g_common.pixel_scale);
         fix_def.shape = poly;
         fix_def.density = prop.density;
 

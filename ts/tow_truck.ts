@@ -22,6 +22,8 @@ class Tow_truck extends Body
     {
         super();
 
+        position = position.Copy();
+        position.Multiply(1/g_common.pixel_scale);
         this.create_body(position);
         this.create_wheels();
         this.create_arm();

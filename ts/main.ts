@@ -32,7 +32,7 @@ class Main
 
     private on_preload():void
     {
-        this.level = new Level(this.debug_draw);
+        this.level = new Level(0, this.debug_draw);
         this.stage.addChild(this.level);
 
         this.on_tick();

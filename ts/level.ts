@@ -10,29 +10,35 @@ class Level extends createjs.Container
 
     private ticked:Body[] = [];
 
-    constructor(private debug_draw:b2DebugDraw)
+    constructor(level_id:number, private debug_draw:b2DebugDraw)
     {
         super();
 
         this.init_phys();
 
-        this.tow_truck = new Tow_truck(this.world, new b2Vec2(4, 20));
-        this.ticked.push(this.tow_truck);
+        var data = g_levels[level_id];
 
-        for (var i = 0; i < 10; ++i)
+        for (var i = 0; i < data.props.length; ++i)
         {
-            for (var j = 0; j < 10; ++j)
+            var prop_data = data.props[i];
+
+            if (prop_data.prop === 'tow')
             {
-                var b = new Box(this.world, 'box', new b2Vec2(j*0.5+i*1.5, j*1.5));
-                this.addChild(b.container);
-                this.ticked.push(b);
+                this.tow_truck = new Tow_truck(this.world, new b2Vec2(prop_data.x, prop_data.y));
+                this.ticked.push(this.tow_truck);
+            }
+            else
+            {
+                var box = new Box(this.world, prop_data.prop, new b2Vec2(prop_data.x, prop_data.y), prop_data.rotation / 180 * Math.PI);
+                this.addChild(box.container);
+                this.ticked.push(box);
+
+                if (prop_data.prop === 'target')
+                {
+                    this.towed = box;
+                }
             }
         }
-
-        // this.towed = new Box(this.world, 0.85, 2.25, new b2Vec2(j*0.5+i*1.5, j*1.5), 0.3);
-        this.towed = new Box(this.world, 'car', new b2Vec2(20, 10), 0.3);
-        this.addChild(this.towed.container);
-        this.ticked.push(this.towed);
 
         this.addChild(this.tow_truck.container);
     }

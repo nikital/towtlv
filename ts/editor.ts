@@ -151,7 +151,7 @@ class Editor
                 }
                 break;
             case 'R'.charCodeAt(0):
-                if (this.active_prop)
+                if (this.active_prop && this.active_prop.name !== 'tow')
                 {
                     this.modal = Modal.Rotate;
                 }
@@ -207,7 +207,7 @@ class Editor
             data.props.push({prop:prop.name, x:prop.bitmap.x, y:prop.bitmap.y, rotation:Math.floor(prop.bitmap.rotation)});
         }
 
-        (<HTMLTextAreaElement>document.getElementById("level")).value = JSON.stringify(data);
+        (<HTMLTextAreaElement>document.getElementById("level")).value = JSON.stringify(data) + '\n';
     }
 
     private import_level():void
