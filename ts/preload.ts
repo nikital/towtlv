@@ -7,4 +7,8 @@ class Preload
     {
         return <HTMLImageElement>Preload.queue.getResult('assets/'+name+'.png');
     }
+    public static get_sound(name:string):string
+    {
+        return 'assets/'+name+'.mp3';
+    }
 }

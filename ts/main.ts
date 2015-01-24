@@ -6,6 +6,7 @@
 /// <reference path="preload.ts" />
 /// <reference path="props.ts" />
 /// <reference path="level.ts" />
+/// <reference path="defs/soundjs/soundjs.d.ts"/>
 
 class Main
 {
@@ -27,6 +28,9 @@ class Main
         this.debug_draw.SetFillAlpha(0.5);
         this.debug_draw.SetLineThickness(1.0);
         this.debug_draw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+
+        createjs.Sound.alternateExtensions = ["mp3"];
+        Preload.queue.installPlugin(createjs.Sound);
 
         Preload.queue.on("complete", this.on_preload, this);
         Preload.queue.loadManifest(preload_manifest);
