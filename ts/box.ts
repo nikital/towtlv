@@ -35,9 +35,18 @@ class Box extends Body
         body_def.angularDamping = 2;
 
         var fix_def = new b2FixtureDef();
-        var poly = new b2PolygonShape();
-        poly.SetAsBox((half_width-2) / g_common.pixel_scale, (half_height-2) / g_common.pixel_scale);
-        fix_def.shape = poly;
+
+        if (prop.circular)
+        {
+            fix_def.shape = new b2CircleShape((half_width-2) / g_common.pixel_scale);
+        }
+        else
+        {
+            var poly = new b2PolygonShape();
+            poly.SetAsBox((half_width-2) / g_common.pixel_scale, (half_height-2) / g_common.pixel_scale);
+            fix_def.shape = poly;
+        }
+
         fix_def.density = prop.density;
 
         this.body = this.world.CreateBody(body_def);

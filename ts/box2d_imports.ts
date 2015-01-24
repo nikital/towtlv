@@ -17,3 +17,4 @@ import b2Contact = Box2D.Dynamics.Contacts.b2Contact;
 import b2ContactImpulse = Box2D.Dynamics.b2ContactImpulse;
 
 import b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape;
+import b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
