@@ -1,4 +1,4 @@
 var g_levels = {
-    0: {"background":"","props":[{"prop":"tow","x":343,"y":97,"rotation":0},{"prop":"target","x":342,"y":314,"rotation":0},{"prop":"car","x":337,"y":509,"rotation":88}]}
- 
+    0: {"background":"","props":[{"prop":"tow","x":194,"y":416,"rotation":0},{"prop":"target","x":544,"y":82,"rotation":-177},{"prop":"wall","x":474,"y":91,"rotation":0},{"prop":"wall","x":606,"y":88,"rotation":0}]}
+    ,1: {"background":"","props":[{"prop":"tow","x":194,"y":416,"rotation":0},{"prop":"target","x":478,"y":91,"rotation":85},{"prop":"wall","x":298,"y":94,"rotation":0},{"prop":"wall","x":606,"y":88,"rotation":0}]}
 };

@@ -15,15 +15,15 @@ var Props:{[index:string]:Prop} = {
     },
     car: {
         bitmap_path: 'car',
-        density: 2,
+        density: 1,
         dynamic: true,
         kill_ortho: true,
     },
     target: {
         bitmap_path: 'target',
-        density: 2,
+        density: 1,
         dynamic: true,
-        kill_ortho: false,
+        kill_ortho: true,
     },
     tow: {
         bitmap_path: 'tow_body',

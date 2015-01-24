@@ -11,6 +11,7 @@ class Main
 {
     private debug_draw = new b2DebugDraw();
     private stage:createjs.Stage;
+    private curr_level:number = 0;
     private level:Level;
 
     constructor(private canvas:HTMLCanvasElement)
@@ -33,12 +34,26 @@ class Main
 
     private on_preload():void
     {
-        this.level = new Level(0, this.debug_draw);
+        this.load_level(0);
+
+        this.on_tick();
+    }
+
+    private load_level(level:number):void
+    {
+        this.curr_level = level;
+
+        if (this.level)
+        {
+            this.stage.removeChild(this.level);
+        }
+
+        this.level = new Level(this.curr_level, this.debug_draw);
         this.level.on('fail', this.on_fail, this);
         this.level.on('win', this.on_win, this);
         this.stage.addChild(this.level);
 
-        this.on_tick();
+        console.log('Loaded level', level);
     }
 
     private on_tick():void
@@ -59,14 +74,12 @@ class Main
 
     private on_win(e:createjs.Event):void
     {
-        this.stage.removeChild(this.level);
-        this.level = null;
+        this.load_level(this.curr_level + 1);
     }
 
     private on_fail(e:createjs.Event):void
     {
-        this.stage.removeChild(this.level);
-        this.level = null;
+        this.load_level(this.curr_level);
     }
 }
 

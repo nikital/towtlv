@@ -184,7 +184,12 @@ class Editor
                 this.export_level();
                 break;
             case 'I'.charCodeAt(0):
-                this.import_level();
+                this.import_level(JSON.parse((<HTMLTextAreaElement>document.getElementById("level")).value));
+                break;
+            case 'L'.charCodeAt(0):
+                var to_load = parseInt(prompt('Level:'))
+                console.log('Loading', to_load);
+                this.import_level(g_levels[to_load]);
                 break;
             default:
                 return;
@@ -210,14 +215,13 @@ class Editor
         (<HTMLTextAreaElement>document.getElementById("level")).value = JSON.stringify(data);
     }
 
-    private import_level():void
+    private import_level(data:any):void
     {
         this.stage.removeAllChildren();
         this.props = [];
         this.active_prop = null;
         this.modal = Modal.None;
 
-        var data = JSON.parse((<HTMLTextAreaElement>document.getElementById("level")).value);
         for (var i = 0; i < data.props.length; ++i)
         {
             var name = data.props[i].prop;
