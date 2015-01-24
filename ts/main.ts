@@ -16,6 +16,7 @@ class Main
     constructor(private canvas:HTMLCanvasElement)
     {
         g_common = new Common();
+        g_common.canvas = canvas;
         g_input = new Input();
 
         this.stage = new createjs.Stage(canvas);
@@ -34,6 +35,7 @@ class Main
     {
         this.level = new Level(0, this.debug_draw);
         this.level.on('fail', this.on_fail, this);
+        this.level.on('win', this.on_win, this);
         this.stage.addChild(this.level);
 
         this.on_tick();
@@ -55,9 +57,14 @@ class Main
         setTimeout(this.on_tick.bind(this), 1000 / 60);
     }
 
+    private on_win(e:createjs.Event):void
+    {
+        this.stage.removeChild(this.level);
+        this.level = null;
+    }
+
     private on_fail(e:createjs.Event):void
     {
-        alert('failed');
         this.stage.removeChild(this.level);
         this.level = null;
     }

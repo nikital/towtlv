@@ -8,6 +8,7 @@ class Common
         sprite.x = pos.x * this.pixel_scale;
         sprite.y = pos.y * this.pixel_scale;
     }
+    public canvas:HTMLCanvasElement;
 }
 
 var g_common:Common;

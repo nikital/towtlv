@@ -76,6 +76,18 @@ class Level extends createjs.Container implements b2ContactListener
 
         this.world.Step(1/60, 6, 3);
         this.world.ClearForces();
+
+        if (!this.failed)
+        {
+            var b = this.towed.container.getTransformedBounds();
+            if ((b.y > g_common.canvas.height)
+               ||( b.y < -b.height)
+               || (b.x > g_common.canvas.width)
+               || (b.x < -b.width))
+            {
+                this.dispatchEvent(new createjs.Event('win', false, false));
+            }
+        }
     }
 
     public draw_debug():void
